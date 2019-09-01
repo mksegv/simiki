@@ -21,7 +21,7 @@
           {%- for page in category.pages %}
             {%- if site.default_ext in page.fname %}  {# is page #}
           <li class="pagelist item_arrow">
-              <a href="./{{ category.name }}/{{ page.name }}.html">{{ page.title }}</a>
+              <a href="./{{ page.category }}/{{ page.name }}.html">{{ page.title }}</a>
               {%- if 'description' in page %}
               &nbsp;&nbsp;&nbsp;{{ page.description }}
               {% endif %}
@@ -32,7 +32,7 @@
                 <div class="coll_name item_arrow">{{ coll.name }}&nbsp;&#58;&nbsp;</div>
                 <div class="coll_list">
               {%- for coll_page in coll.pages %}
-                  <a href="./{{ category.name }}/{{ coll_page.name }}.html">{{ coll_page.title }}</a>
+                  <a href="./{{ coll_page.category }}/{{ coll_page.name }}.html">{{ coll_page.title }}</a>
                 {%- if 'description' in coll_page %}
                   &nbsp;{{ coll_page.description }}
                 {% endif %}
