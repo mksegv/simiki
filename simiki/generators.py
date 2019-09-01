@@ -195,13 +195,18 @@ class PageGenerator(BaseGenerator):
         """
         regex = re.compile('(?sm)^---(?P<meta>.*?)^---(?P<body>.*)')
         with io.open(filename, "rt", encoding="utf-8") as fd:
-            match_obj = re.match(regex, fd.read())
+            file_content = fd.read()
+            match_obj = re.match(regex, file_content)
             if match_obj:
                 meta_str = match_obj.group('meta')
                 content_str = match_obj.group('body')
             else:
-                raise Exception('extracting page with format error, '
-                                'see <http://simiki.org/docs/metadata.html>')
+                meta_str = ''
+                content_str = file_content
+                warnings.warn('extracting page with format error, '
+                              'using default configuration now, '
+                              'see <http://simiki.org/docs/metadata.html>',
+                              SyntaxWarning)
 
         return meta_str, content_str
 
@@ -216,6 +221,8 @@ class PageGenerator(BaseGenerator):
         category, src_fname = self.get_category_and_file()
         dst_fname = src_fname.replace(
             ".{0}".format(self.site_config['default_ext']), '.html')
+        if not meta:
+            meta = {}
         meta.update({'category': category, 'filename': dst_fname})
 
         if 'tag' in meta:
@@ -223,8 +230,14 @@ class PageGenerator(BaseGenerator):
                 _tags = [t.strip() for t in meta['tag'].split(',')]
                 meta.update({'tag': _tags})
 
+        if "date" not in meta:
+            meta['date'] = '1970-01-01 00:00:00'
+            warnings.warn("no 'date' in meta, using UNIX timestamp 0",
+                          SyntaxWarning)
         if "title" not in meta:
-            raise Exception("no 'title' in meta")
+            meta['title'] = src_fname
+            warnings.warn("no 'title' in meta, using filename",
+                          SyntaxWarning)
 
         return meta
 
